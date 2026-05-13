@@ -7,10 +7,10 @@ Valentine’s Garage faces challenges in managing truck repairs efficiently. Som
 
 This system aims to:
 
-Improve repair task tracking
-Increase employee accountability
-Maintain accurate vehicle condition records
-Generate management reports
+Improve repair task tracking, 
+Increase employee accountability,
+Maintain accurate vehicle condition records,
+Generate management reports.
 
 
 
