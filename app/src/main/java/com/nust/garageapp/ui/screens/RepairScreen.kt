@@ -13,15 +13,25 @@ import com.nust.garageapp.data.entity.CheckInRecord
 import com.nust.garageapp.data.entity.RepairTask
 import com.nust.garageapp.ui.GarageViewModel
 
+/**
+ * Composable screen for managing repair tasks for vehicles currently in the garage.
+ * Allows mechanics to view check-ins, add maintenance tasks, and mark them as complete.
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onBack Callback to return to the previous screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RepairScreen(
     viewModel: GarageViewModel,
     onBack: () -> Unit,
 ) {
+    /** Observable list of all recorded vehicle check-ins. */
     val checkIns by viewModel.allCheckIns.collectAsState(initial = emptyList())
+    /** Formatter for displaying timestamps in a human-readable format. */
     val dateFormat = remember { java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault()) }
     
+    /** State for the check-in record currently selected for task management. */
     var selectedCheckIn by remember { mutableStateOf<CheckInRecord?>(null) }
     
     Scaffold(
@@ -96,10 +106,19 @@ fun RepairScreen(
     }
 }
 
+/**
+ * Individual item representing a single repair task within a list.
+ * 
+ * @param task The repair task to display.
+ * @param viewModel The shared ViewModel to handle task completion updates.
+ */
 @Composable
 fun TaskItem(task: RepairTask, viewModel: GarageViewModel) {
+    /** State to control the visibility of the completion notes dialog. */
     var showDialog by remember { mutableStateOf(value = false) }
+    /** State for the completion notes input field. */
     var notes by remember { mutableStateOf(task.notes) }
+    /** Observable state of the current user to record who completed the task. */
     val currentUser by viewModel.currentUser.collectAsState()
 
     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {

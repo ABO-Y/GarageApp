@@ -14,13 +14,22 @@ import com.nust.garageapp.ui.GarageViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Composable screen for viewing application reports and analytics.
+ * Includes tabs for general vehicle check-ins and detailed employee work logs.
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onBack Callback to return to the previous screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportScreen(
     viewModel: GarageViewModel,
     onBack: () -> Unit,
 ) {
+    /** State for the currently selected tab index. */
     var selectedTab by remember { mutableIntStateOf(0) }
+    /** List of available report categories. */
     val tabs = listOf("Check-ins", "Employee Work")
 
     Scaffold(
@@ -54,10 +63,18 @@ fun ReportScreen(
     }
 }
 
+/**
+ * Displays a historical list of all vehicle check-ins.
+ * 
+ * @param viewModel The ViewModel providing check-in and employee data.
+ */
 @Composable
 fun CheckInReport(viewModel: GarageViewModel) {
+    /** Observable list of all check-in records. */
     val checkIns by viewModel.allCheckIns.collectAsState(initial = emptyList())
+    /** Observable list of employees to resolve mechanic names from IDs. */
     val employees by viewModel.allEmployees.collectAsState(initial = emptyList())
+    /** Formatter for displaying check-in dates. */
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault()) }
 
     LazyColumn(modifier = Modifier.padding(16.dp).fillMaxSize()) {
@@ -77,10 +94,19 @@ fun CheckInReport(viewModel: GarageViewModel) {
     }
 }
 
+/**
+ * Displays detailed work logs for specific employees.
+ * Allows filtering tasks by selecting an employee from the list.
+ * 
+ * @param viewModel The ViewModel providing employee and task data.
+ */
 @Composable
 fun EmployeeReport(viewModel: GarageViewModel) {
+    /** Observable list of all staff members. */
     val employees by viewModel.allEmployees.collectAsState(initial = emptyList())
+    /** State for the employee currently selected for detailed viewing. */
     var selectedEmployeeId by remember { mutableStateOf<Long?>(null) }
+    /** Formatter for task completion dates. */
     val dateFormat = remember { SimpleDateFormat("dd MMM yyyy HH:mm", Locale.getDefault()) }
 
     Column(modifier = Modifier.padding(16.dp).fillMaxSize()) {

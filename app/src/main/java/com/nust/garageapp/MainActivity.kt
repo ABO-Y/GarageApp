@@ -20,13 +20,25 @@ import com.nust.garageapp.ui.GarageViewModelFactory
 import com.nust.garageapp.ui.screens.*
 import com.nust.garageapp.ui.theme.GarageAppTheme
 
+/**
+ * The entry point activity for the Garage Application.
+ * Responsible for initializing the database, repository, and ViewModel, 
+ * and setting up the Jetpack Compose UI content.
+ */
 class MainActivity : ComponentActivity() {
+    /** Lazy-initialized database instance. */
     private val database by lazy { GarageDatabase.getDatabase(this) }
+    /** Lazy-initialized repository instance. */
     private val repository by lazy { GarageRepository(database.garageDao()) }
+    /** ViewModel instance scoped to this activity, initialized with a custom factory. */
     private val viewModel: GarageViewModel by viewModels {
         GarageViewModelFactory(repository)
     }
 
+    /**
+     * Called when the activity is first created.
+     * Sets up the edge-to-edge display and the Compose UI.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,8 +50,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Root Composable function for the entire application.
+ * Manages navigation between different screens using a [NavHost].
+ * 
+ * @param viewModel The shared ViewModel instance used by all screens.
+ */
 @Composable
 fun GarageApp(viewModel: GarageViewModel) {
+    /** The navigation controller used to switch between destinations. */
     val navController = rememberNavController()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -48,6 +67,7 @@ fun GarageApp(viewModel: GarageViewModel) {
             startDestination = "login",
             modifier = Modifier.padding(innerPadding),
         ) {
+            /** Destination for the initial login screen. */
             composable("login") {
                 LoginScreen(
                     viewModel = viewModel,
@@ -57,6 +77,7 @@ fun GarageApp(viewModel: GarageViewModel) {
                     }
                 }
             }
+            /** Destination for the main dashboard screen. */
             composable("home") {
                 HomeScreen(
                     viewModel = viewModel,
@@ -72,6 +93,7 @@ fun GarageApp(viewModel: GarageViewModel) {
                     }
                 )
             }
+            /** Destination for the staff management screen (Manager only). */
             composable("manage_staff") {
                 ManageStaffScreen(
                     viewModel = viewModel,
@@ -79,6 +101,7 @@ fun GarageApp(viewModel: GarageViewModel) {
                     navController.popBackStack()
                 }
             }
+            /** Destination for the vehicle check-in screen. */
             composable("check_in") {
                 CheckInScreen(
                     viewModel = viewModel,
@@ -86,6 +109,7 @@ fun GarageApp(viewModel: GarageViewModel) {
                     navController.popBackStack()
                 }
             }
+            /** Destination for the repair task management screen. */
             composable("repair") {
                 RepairScreen(
                     viewModel = viewModel,
@@ -93,6 +117,7 @@ fun GarageApp(viewModel: GarageViewModel) {
                     navController.popBackStack()
                 }
             }
+            /** Destination for viewing various application reports. */
             composable("reports") {
                 ReportScreen(
                     viewModel = viewModel,

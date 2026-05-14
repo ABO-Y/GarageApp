@@ -11,18 +11,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nust.garageapp.ui.GarageViewModel
 
+/**
+ * Composable screen for registering new trucks and recording vehicle check-ins.
+ * Allows entry of vehicle details, mileage, and condition assessments.
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onBack Callback to navigate back to the previous screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckInScreen(
     viewModel: GarageViewModel,
     onBack: () -> Unit,
 ) {
+    /** State for the truck's license plate input field. */
     var licensePlate by remember { mutableStateOf("") }
+    /** State for the truck's model input field. */
     var model by remember { mutableStateOf("") }
+    /** State for the vehicle's current mileage/kilometers input. */
     var kilometers by remember { mutableStateOf("") }
+    /** State for the general condition description input. */
     var condition by remember { mutableStateOf("") }
+    /** State for the mechanic's subjective rating (1-5). */
     var rating by remember { mutableIntStateOf(3) }
     
+    /** Observable list of all registered trucks from the ViewModel. */
     val trucks by viewModel.allTrucks.collectAsState(initial = emptyList())
 
     Scaffold(

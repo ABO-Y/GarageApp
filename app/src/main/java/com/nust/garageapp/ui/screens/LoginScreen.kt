@@ -9,12 +9,21 @@ import androidx.compose.ui.unit.dp
 import com.nust.garageapp.data.entity.UserRole
 import com.nust.garageapp.ui.GarageViewModel
 
+/**
+ * The initial entry screen for the application.
+ * Handles user authentication via name entry.
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onLoginSuccess Callback invoked after a successful login.
+ */
 @Composable
 fun LoginScreen(
     viewModel: GarageViewModel,
     onLoginSuccess: () -> Unit,
 ) {
+    /** State for the user's name input field. */
     var name by remember { mutableStateOf("") }
+    /** State for displaying error messages during login attempts. */
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(

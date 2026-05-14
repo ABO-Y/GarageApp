@@ -13,6 +13,17 @@ import androidx.compose.ui.unit.dp
 import com.nust.garageapp.data.entity.UserRole
 import com.nust.garageapp.ui.GarageViewModel
 
+/**
+ * The main dashboard screen shown after a successful login.
+ * Displays different action buttons based on the user's role (Manager, Mechanic, or Guest).
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onNavigateToCheckIn Callback to go to the Check-in screen.
+ * @param onNavigateToRepair Callback to go to the Repair screen.
+ * @param onNavigateToReports Callback to go to the Reports screen.
+ * @param onNavigateToManageStaff Callback to go to the Staff Management screen.
+ * @param onLogout Callback to log out and return to the login screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -23,6 +34,7 @@ fun HomeScreen(
     onNavigateToManageStaff: () -> Unit,
     onLogout: () -> Unit,
 ) {
+    /** The current user session observed from the ViewModel. */
     val currentUser by viewModel.currentUser.collectAsState()
 
     Scaffold(

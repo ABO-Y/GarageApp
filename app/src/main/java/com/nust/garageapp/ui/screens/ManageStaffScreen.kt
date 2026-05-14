@@ -13,14 +13,24 @@ import androidx.compose.ui.unit.dp
 import com.nust.garageapp.data.entity.UserRole
 import com.nust.garageapp.ui.GarageViewModel
 
+/**
+ * Composable screen for managing garage personnel.
+ * Allows Managers to add new mechanics and remove existing staff members.
+ * 
+ * @param viewModel The shared application ViewModel.
+ * @param onBack Callback to return to the home screen.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageStaffScreen(
     viewModel: GarageViewModel,
     onBack: () -> Unit,
 ) {
+    /** State for the new employee name input field. */
     var newEmployeeName by remember { mutableStateOf("") }
+    /** Observable list of all employees in the system. */
     val employees by viewModel.allEmployees.collectAsState(initial = emptyList())
+    /** The current user session for permission checks (e.g., preventing self-deletion). */
     val currentUser by viewModel.currentUser.collectAsState()
 
     Scaffold(
