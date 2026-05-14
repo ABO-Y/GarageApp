@@ -38,7 +38,7 @@ fun RepairScreen(
                     }
                 },
             )
-        }
+        },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
             if (selectedCheckIn == null) {

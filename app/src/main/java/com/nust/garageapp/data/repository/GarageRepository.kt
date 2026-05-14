@@ -19,6 +19,7 @@ class GarageRepository(private val garageDao: GarageDao) {
     val allEmployees: Flow<List<Employee>> = garageDao.getAllEmployees()
     suspend fun addEmployee(employee: Employee): Long = garageDao.insertEmployee(employee)
     suspend fun getEmployeeByName(name: String): Employee? = garageDao.getEmployeeByName(name)
+    suspend fun deleteEmployee(employee: Employee) = garageDao.deleteEmployee(employee)
 
     // Tasks
     fun getTasksForCheckIn(checkInId: Long): Flow<List<RepairTask>> = garageDao.getTasksForCheckIn(checkInId)

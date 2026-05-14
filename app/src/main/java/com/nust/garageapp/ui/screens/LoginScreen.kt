@@ -52,7 +52,7 @@ fun LoginScreen(
                         if (success) {
                             onLoginSuccess()
                         } else {
-                            errorMessage = "User not found. Try 'Admin' or 'Worker'"
+                            errorMessage = "User not found. Try 'Valentine' or 'Guest'"
                         }
                     }
                 } else {
@@ -62,16 +62,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
             Text("Login")
-        }
-        
-        TextButton(
-            onClick = {
-                // Setup the Manager first
-                viewModel.addEmployee("Valentine", UserRole.MANAGER)
-                errorMessage = "Manager 'Valentine' created! Log in to add staff."
-            }
-        ) {
-            Text("Setup Manager (Valentine)")
         }
     }
 }

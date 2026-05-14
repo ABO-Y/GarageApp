@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ fun ManageStaffScreen(
 ) {
     var newEmployeeName by remember { mutableStateOf("") }
     val employees by viewModel.allEmployees.collectAsState(initial = emptyList())
+    val currentUser by viewModel.currentUser.collectAsState()
 
     Scaffold(
         topBar = {
@@ -75,6 +77,17 @@ fun ManageStaffScreen(
                     ListItem(
                         headlineContent = { Text(employee.name) },
                         supportingContent = { Text("Role: ${employee.role}") },
+                        trailingContent = {
+                            if (employee.id != currentUser?.id) {
+                                IconButton(onClick = { viewModel.deleteEmployee(employee) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Remove Employee",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

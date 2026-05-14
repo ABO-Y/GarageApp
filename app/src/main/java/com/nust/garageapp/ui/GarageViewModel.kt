@@ -27,6 +27,20 @@ class GarageViewModel(private val repository: GarageRepository) : ViewModel() {
             return
         }
 
+        // Auto-create Valentine if she doesn't exist
+        if (name.equals("Valentine", ignoreCase = true)) {
+            viewModelScope.launch {
+                val existing = repository.getEmployeeByName("Valentine")
+                if (existing == null) {
+                    repository.addEmployee(Employee(name = "Valentine", role = UserRole.MANAGER))
+                }
+                val valentine = repository.getEmployeeByName("Valentine")
+                _currentUser.value = valentine
+                onResult(true)
+            }
+            return
+        }
+
         viewModelScope.launch {
             val employee = repository.getEmployeeByName(name)
             if (employee != null) {
@@ -73,6 +87,12 @@ class GarageViewModel(private val repository: GarageRepository) : ViewModel() {
     fun addEmployee(name: String, role: UserRole = UserRole.MECHANIC) {
         viewModelScope.launch {
             repository.addEmployee(Employee(name = name, role = role))
+        }
+    }
+
+    fun deleteEmployee(employee: Employee) {
+        viewModelScope.launch {
+            repository.deleteEmployee(employee)
         }
     }
 

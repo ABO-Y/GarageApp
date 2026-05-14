@@ -36,6 +36,9 @@ interface GarageDao {
     @Query("SELECT * FROM employees WHERE name = :name LIMIT 1")
     suspend fun getEmployeeByName(name: String): Employee?
 
+    @Delete
+    suspend fun deleteEmployee(employee: Employee)
+
     // RepairTask
     @Insert
     suspend fun insertRepairTask(task: RepairTask): Long
