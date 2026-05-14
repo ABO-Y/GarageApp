@@ -6,11 +6,10 @@ Problem Statement
 Valentine’s Garage faces challenges in managing truck repairs efficiently. Some repair tasks may remain incomplete because mechanics assume another employee handled them. There is also a need to record the condition of vehicles during check-in to prevent disputes or misuse while trucks are in the garage.
 
 This system aims to:
-
-Improve repair task tracking, 
-Increase employee accountability,
-Maintain accurate vehicle condition records,
-Generate management reports.
+    -Improve repair task tracking, 
+    -Increase employee accountability,
+    -Maintain accurate vehicle condition records,
+    -Generate management reports.
 
 
 
