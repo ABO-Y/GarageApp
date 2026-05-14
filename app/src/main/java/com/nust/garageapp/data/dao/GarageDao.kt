@@ -13,6 +13,9 @@ interface GarageDao {
     @Query("SELECT * FROM trucks")
     fun getAllTrucks(): Flow<List<Truck>>
 
+    @Query("SELECT * FROM trucks WHERE licensePlate = :licensePlate LIMIT 1")
+    suspend fun getTruckByPlate(licensePlate: String): Truck?
+
     // CheckInRecord
     @Insert
     suspend fun insertCheckIn(record: CheckInRecord): Long
@@ -30,12 +33,15 @@ interface GarageDao {
     @Query("SELECT * FROM employees")
     fun getAllEmployees(): Flow<List<Employee>>
 
+    @Query("SELECT * FROM employees WHERE name = :name LIMIT 1")
+    suspend fun getEmployeeByName(name: String): Employee?
+
     // RepairTask
     @Insert
-    suspend fun insertRepairTask(task: RepairTask)
+    suspend fun insertRepairTask(task: RepairTask): Long
 
     @Update
-    suspend fun updateRepairTask(task: RepairTask)
+    suspend fun updateRepairTask(task: RepairTask): Int
 
     @Query("SELECT * FROM repair_tasks WHERE checkInRecordId = :checkInId")
     fun getTasksForCheckIn(checkInId: Long): Flow<List<RepairTask>>

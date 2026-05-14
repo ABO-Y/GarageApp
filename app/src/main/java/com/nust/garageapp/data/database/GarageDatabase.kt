@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.nust.garageapp.data.dao.GarageDao
 import com.nust.garageapp.data.entity.CheckInRecord
 import com.nust.garageapp.data.entity.Employee
@@ -12,9 +13,10 @@ import com.nust.garageapp.data.entity.Truck
 
 @Database(
     entities = [Truck::class, CheckInRecord::class, Employee::class, RepairTask::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract class GarageDatabase : RoomDatabase() {
     abstract fun garageDao(): GarageDao
 

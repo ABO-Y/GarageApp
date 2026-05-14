@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nust.garageapp.data.entity.CheckInRecord
-import com.nust.garageapp.data.entity.Employee
 import com.nust.garageapp.data.entity.RepairTask
 import com.nust.garageapp.ui.GarageViewModel
 
@@ -18,10 +17,10 @@ import com.nust.garageapp.ui.GarageViewModel
 @Composable
 fun RepairScreen(
     viewModel: GarageViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val checkIns by viewModel.allCheckIns.collectAsState(initial = emptyList())
-    val employees by viewModel.allEmployees.collectAsState(initial = emptyList())
+    val dateFormat = remember { java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault()) }
     
     var selectedCheckIn by remember { mutableStateOf<CheckInRecord?>(null) }
     
@@ -30,12 +29,14 @@ fun RepairScreen(
             TopAppBar(
                 title = { Text(if (selectedCheckIn == null) "Select Vehicle" else "Repair Tasks") },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (selectedCheckIn == null) onBack() else selectedCheckIn = null
-                    }) {
+                    IconButton(
+                        onClick = {
+                            if (selectedCheckIn == null) onBack() else selectedCheckIn = null
+                        },
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
         }
     ) { padding ->
@@ -51,14 +52,16 @@ fun RepairScreen(
                         ) {
                             ListItem(
                                 headlineContent = { Text("Truck ID: ${record.truckId}") },
-                                supportingContent = { Text("Checked in: ${java.util.Date(record.checkInDate)}") }
+                                supportingContent = { Text("Checked in: ${dateFormat.format(java.util.Date(record.checkInDate))}") }
                             )
                         }
                     }
                 }
             } else {
                 // Tasks for the selected vehicle
-                val tasks by viewModel.getTasksForCheckIn(selectedCheckIn!!.id).collectAsState(initial = emptyList())
+                val tasks by remember(selectedCheckIn?.id) {
+                    viewModel.getTasksForCheckIn(selectedCheckIn!!.id)
+                }.collectAsState(initial = emptyList())
                 var newTaskDescription by remember { mutableStateOf("") }
                 
                 Text("Manage Tasks for ID: ${selectedCheckIn!!.id}", style = MaterialTheme.typography.titleMedium)
@@ -85,7 +88,7 @@ fun RepairScreen(
                 
                 LazyColumn {
                     items(tasks) { task ->
-                        TaskItem(task, employees, viewModel)
+                        TaskItem(task, viewModel)
                     }
                 }
             }
@@ -94,10 +97,10 @@ fun RepairScreen(
 }
 
 @Composable
-fun TaskItem(task: RepairTask, employees: List<Employee>, viewModel: GarageViewModel) {
-    var showDialog by remember { mutableStateOf(false) }
+fun TaskItem(task: RepairTask, viewModel: GarageViewModel) {
+    var showDialog by remember { mutableStateOf(value = false) }
     var notes by remember { mutableStateOf(task.notes) }
-    var selectedEmployeeId by remember { mutableStateOf<Long?>(task.employeeId) }
+    val currentUser by viewModel.currentUser.collectAsState()
 
     Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -109,7 +112,7 @@ fun TaskItem(task: RepairTask, employees: List<Employee>, viewModel: GarageViewM
                 Column {
                     Text(task.description, style = MaterialTheme.typography.bodyLarge)
                     if (task.isCompleted) {
-                        Text("Completed by Employee ID: ${task.employeeId}", style = MaterialTheme.typography.bodySmall)
+                        Text("Completed by: ${task.employeeId}", style = MaterialTheme.typography.bodySmall)
                         Text("Notes: ${task.notes}", style = MaterialTheme.typography.bodySmall)
                     }
                 }
@@ -123,32 +126,31 @@ fun TaskItem(task: RepairTask, employees: List<Employee>, viewModel: GarageViewM
             title = { Text("Complete Task") },
             text = {
                 Column {
-                    Text("Select your name and add notes:")
-                    // Simple text field for name if employee list is empty for now
+                    Text("Describe what you worked on:")
                     OutlinedTextField(
                         value = notes,
                         onValueChange = { notes = it },
-                        label = { Text("Repair Notes") }
+                        label = { Text("Repair Notes") },
+                        modifier = Modifier.padding(top = 8.dp)
                     )
-                    // In a real app, this would be a DropdownMenu of employees
-                    Text("Employee ID (Mock):")
-                    OutlinedTextField(
-                        value = (selectedEmployeeId ?: "").toString(),
-                        onValueChange = { selectedEmployeeId = it.toLongOrNull() },
-                        label = { Text("Your ID") }
+                    Text(
+                        text = "Working as: ${currentUser?.name ?: "Guest"}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
-                    if (selectedEmployeeId != null) {
-                        viewModel.completeTask(task, selectedEmployeeId!!, notes)
+                TextButton(
+                    onClick = {
+                        val workerId = currentUser?.id ?: -1
+                        viewModel.completeTask(task, workerId, notes)
                         showDialog = false
-                    }
-                }) {
+                    },
+                ) {
                     Text("Done")
                 }
-            }
+            },
         )
     }
 }

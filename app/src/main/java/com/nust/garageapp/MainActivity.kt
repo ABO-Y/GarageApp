@@ -17,10 +17,7 @@ import com.nust.garageapp.data.database.GarageDatabase
 import com.nust.garageapp.data.repository.GarageRepository
 import com.nust.garageapp.ui.GarageViewModel
 import com.nust.garageapp.ui.GarageViewModelFactory
-import com.nust.garageapp.ui.screens.CheckInScreen
-import com.nust.garageapp.ui.screens.HomeScreen
-import com.nust.garageapp.ui.screens.RepairScreen
-import com.nust.garageapp.ui.screens.ReportScreen
+import com.nust.garageapp.ui.screens.*
 import com.nust.garageapp.ui.theme.GarageAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,37 +41,64 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GarageApp(viewModel: GarageViewModel) {
     val navController = rememberNavController()
-    
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
-            modifier = Modifier.padding(innerPadding)
+            startDestination = "login",
+            modifier = Modifier.padding(innerPadding),
         ) {
+            composable("login") {
+                LoginScreen(
+                    viewModel = viewModel,
+                ) {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            }
             composable("home") {
                 HomeScreen(
+                    viewModel = viewModel,
                     onNavigateToCheckIn = { navController.navigate("check_in") },
                     onNavigateToRepair = { navController.navigate("repair") },
-                    onNavigateToReports = { navController.navigate("reports") }
+                    onNavigateToReports = { navController.navigate("reports") },
+                    onNavigateToManageStaff = { navController.navigate("manage_staff") },
+                    onLogout = {
+                        viewModel.logout()
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                    }
                 )
+            }
+            composable("manage_staff") {
+                ManageStaffScreen(
+                    viewModel = viewModel,
+                ) {
+                    navController.popBackStack()
+                }
             }
             composable("check_in") {
                 CheckInScreen(
                     viewModel = viewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                ) {
+                    navController.popBackStack()
+                }
             }
             composable("repair") {
                 RepairScreen(
                     viewModel = viewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                ) {
+                    navController.popBackStack()
+                }
             }
             composable("reports") {
                 ReportScreen(
                     viewModel = viewModel,
-                    onBack = { navController.popBackStack() }
-                )
+                ) {
+                    navController.popBackStack()
+                }
             }
         }
     }

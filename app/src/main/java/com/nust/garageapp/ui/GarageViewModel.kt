@@ -6,37 +6,73 @@ import androidx.lifecycle.viewModelScope
 import com.nust.garageapp.data.entity.*
 import com.nust.garageapp.data.repository.GarageRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class GarageViewModel(private val repository: GarageRepository) : ViewModel() {
+
+    private val _currentUser = MutableStateFlow<Employee?>(null)
+    val currentUser: StateFlow<Employee?> = _currentUser.asStateFlow()
 
     val allTrucks: Flow<List<Truck>> = repository.allTrucks
     val allCheckIns: Flow<List<CheckInRecord>> = repository.allCheckIns
     val allEmployees: Flow<List<Employee>> = repository.allEmployees
 
-    fun addTruck(licensePlate: String, model: String, onResult: (Long) -> Unit) {
+    fun login(name: String, onResult: (Boolean) -> Unit) {
+        if (name.lowercase() == "guest") {
+            _currentUser.value = Employee(id = -1, name = "Guest", role = UserRole.GUEST)
+            onResult(true)
+            return
+        }
+
         viewModelScope.launch {
-            val id = repository.addTruck(Truck(licensePlate = licensePlate, model = model))
-            onResult(id)
+            val employee = repository.getEmployeeByName(name)
+            if (employee != null) {
+                _currentUser.value = employee
+                onResult(true)
+            } else {
+                onResult(false)
+            }
         }
     }
 
-    fun checkInTruck(truckId: Long, kilometers: Int, condition: String) {
+    fun logout() {
+        _currentUser.value = null
+    }
+
+    fun addTruck(licensePlate: String, model: String, onResult: (Long) -> Unit) {
+        viewModelScope.launch {
+            val existingTruck = repository.getTruckByPlate(licensePlate)
+            if (existingTruck != null) {
+                onResult(existingTruck.id)
+            } else {
+                val id = repository.addTruck(Truck(licensePlate = licensePlate, model = model))
+                onResult(id)
+            }
+        }
+    }
+
+    fun checkInTruck(truckId: Long, kilometers: Int, condition: String, rating: Int) {
+        val mechanicId = _currentUser.value?.id ?: 0
         viewModelScope.launch {
             repository.addCheckIn(
                 CheckInRecord(
                     truckId = truckId,
+                    mechanicId = mechanicId,
                     checkInDate = System.currentTimeMillis(),
                     kilometers = kilometers,
-                    condition = condition
+                    condition = condition,
+                    rating = rating
                 )
             )
         }
     }
 
-    fun addEmployee(name: String) {
+    fun addEmployee(name: String, role: UserRole = UserRole.MECHANIC) {
         viewModelScope.launch {
-            repository.addEmployee(Employee(name = name))
+            repository.addEmployee(Employee(name = name, role = role))
         }
     }
 

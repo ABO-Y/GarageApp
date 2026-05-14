@@ -8,6 +8,7 @@ class GarageRepository(private val garageDao: GarageDao) {
     // Trucks
     val allTrucks: Flow<List<Truck>> = garageDao.getAllTrucks()
     suspend fun addTruck(truck: Truck): Long = garageDao.insertTruck(truck)
+    suspend fun getTruckByPlate(plate: String): Truck? = garageDao.getTruckByPlate(plate)
 
     // Check-ins
     val allCheckIns: Flow<List<CheckInRecord>> = garageDao.getAllCheckIns()
@@ -17,6 +18,7 @@ class GarageRepository(private val garageDao: GarageDao) {
     // Employees
     val allEmployees: Flow<List<Employee>> = garageDao.getAllEmployees()
     suspend fun addEmployee(employee: Employee): Long = garageDao.insertEmployee(employee)
+    suspend fun getEmployeeByName(name: String): Employee? = garageDao.getEmployeeByName(name)
 
     // Tasks
     fun getTasksForCheckIn(checkInId: Long): Flow<List<RepairTask>> = garageDao.getTasksForCheckIn(checkInId)
